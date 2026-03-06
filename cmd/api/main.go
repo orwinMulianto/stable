@@ -5,8 +5,9 @@ import (
 	"os"
 	"stable/database/migrations"
 	"stable/modules/auth"
-	"time"
+	"stable/modules/user"
 	"stable/packages/utils"
+	"time"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -14,7 +15,7 @@ import (
 	
 func main() {
 	if os.Getenv("APP_ENV") != "production" {
-		if err := godotenv.Load(); err != nil {
+		if err := godotenv.Load("../../.env"); err != nil {
 			log.Println("No .env file found")
 		}
 	}
@@ -22,7 +23,7 @@ func main() {
 	migrations.ConnectDB()
 	utils.InitLogger()
 	router := gin.Default()
-
+	router.SetTrustedProxies(nil)
 	router.Use(cors.New(cors.Config{
     AllowOrigins:     []string{"http://localhost:3000"},
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
@@ -37,6 +38,7 @@ func main() {
 
 	{
 		auth.AuthRouter(v1)
+		user.UserRouter(v1)
 	}
 
 	err := router.Run(":8080")
