@@ -1,10 +1,15 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
-	"stable/database/migrations"
 	"log"
 	"os"
+	"stable/database/migrations"
+	"stable/modules/auth"
+	"time"
+	"stable/packages/utils"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 	
 func main() {
@@ -15,4 +20,28 @@ func main() {
 	}
 
 	migrations.ConnectDB()
+	utils.InitLogger()
+	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+    AllowOrigins:     []string{"http://localhost:3000"},
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+    AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+    ExposeHeaders:    []string{"Content-Length"},
+    AllowCredentials: true,
+    MaxAge:           12 * time.Hour,
+	}))
+
+	api := router.Group("/api")
+	v1 := api.Group("/v1")
+
+	{
+		auth.AuthRouter(v1)
+	}
+
+	err := router.Run(":8080")
+	if err != nil {
+    log.Fatal(err)
+	}
+
 }
