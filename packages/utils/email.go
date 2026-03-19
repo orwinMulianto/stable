@@ -36,6 +36,9 @@ type BrevoResponse struct {
 }
 
 func SendEmail(to string, subject string, body string) error {
+	log.Println("SendEmail called")
+	log.Println("TO:", to)
+	log.Println("SUBJECT:", subject)
 	apiKey := os.Getenv("BREVO_API_KEY")
 	senderEmail := os.Getenv("BREVO_SENDER_EMAIL")
 	senderName := os.Getenv("BREVO_SENDER_NAME")
@@ -120,7 +123,7 @@ func SendEmail(to string, subject string, body string) error {
 }
 
 func GenerateVerificationCode() string {
-	rand.Seed(time.Now().UnixNano())
-	code := rand.Intn(999999-100000) + 100000
-	return strconv.Itoa(code)
+	n := rand.Intn(900000)
+	code := int64(n) + 100000
+	return strconv.FormatInt(code, 10)
 }
