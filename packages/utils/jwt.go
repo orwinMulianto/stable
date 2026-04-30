@@ -3,7 +3,8 @@ package utils
 import (
 	"fmt"
 	"os"
-
+	"time"
+	"stable/database/entities"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -16,4 +17,17 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 		}
 		return []byte(secret), nil
 	})
+}
+
+func GenerateToken(user entities.User) (string, error) {
+    secret := os.Getenv("JWT_SECRET")
+
+    claims := jwt.MapClaims{
+        "id":    user.ID,
+        "email": user.Email,
+        "exp":   time.Now().Add(24 * time.Hour).Unix(),
+    }
+
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+    return token.SignedString([]byte(secret))
 }

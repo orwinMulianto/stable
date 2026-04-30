@@ -16,12 +16,9 @@ import (
 )
 
 func main() {
-		router := gin.Default()
+	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://127.0.0.1:5500",
-			"http://localhost:5500",
-		},
+		AllowAllOrigins: true,
 		AllowMethods: []string{
 			"GET", "POST", "PUT", "DELETE", "OPTIONS",
 		},
@@ -36,7 +33,7 @@ func main() {
 	}))
 	
 	if os.Getenv("APP_ENV") != "production" {
-		if err := godotenv.Load(".env"); err != nil {
+		if err := godotenv.Load("../../.env"); err != nil {
 			log.Println("No .env file found")
 		}
 	}

@@ -57,3 +57,10 @@ type UserResponse struct {
 	ProfileImage string  `json:"profileImage,omitempty"`
 	IsVerified   bool    `json:"isVerified"`
 }
+
+type GoogleUserInfo struct {
+    ID      string `json:"id"`
+    Email   string `json:"email"`
+    Name    string `json:"name"`
+    Picture string `json:"picture"`
+}

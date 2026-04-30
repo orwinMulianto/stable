@@ -15,3 +15,10 @@ type UserResponse struct {
     Name  string `json:"name"`
     Email string `json:"email"`
 }
+
+type UpdateUserInput struct {
+    Username      *string `json:"username,omitempty"`
+    NoTelp        *string `json:"no_telp,omitempty"`
+    JenisKelamin *bool   `json:"jenis_kelamin"`
+    ProfileImage  *string `json:"profile_image,omitempty"`
+}

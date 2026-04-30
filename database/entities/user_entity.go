@@ -13,7 +13,7 @@ type User struct {
 	Password string `gorm:"size:255;not null"`
 	NoTelp       string `json:"noTelp" form:"noTelp"`
 	JenisKelamin *bool  `json:"jenisKelamin" form:"jenisKelamin"`
-	Role string `gorm:"type:enum('USER','ADMIN');default:'USER';not null"`
+	Role string `gorm:"type:enum('USER','TRAINER');default:'USER';not null"`
 
 	AuthProvider string `gorm:"type:enum('PASSWORD','GOOGLE');default:'PASSWORD';not null"`
 
@@ -25,4 +25,5 @@ type User struct {
 
 	Profile    *ProfileUser
 	UserStreak *UserStreak
+	TrainerProfile *TrainerProfile
 }
