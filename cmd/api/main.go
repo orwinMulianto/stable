@@ -7,6 +7,7 @@ import (
 	"stable/modules/auth"
 	"stable/modules/users"
 	"stable/packages/utils"
+	"stable/modules/membership"
 
 	"time"
 
@@ -47,6 +48,7 @@ api := router.Group("/api")
 	{
 		auth.AuthRouter(v1)
 		users.UserRouter(v1)
+		membership.MembershipRouter(v1)
 	}
 
 	err := router.Run(":8080")

@@ -127,3 +127,59 @@ func GenerateVerificationCode() string {
 	code := int64(n) + 100000
 	return strconv.FormatInt(code, 10)
 }
+
+func SendFreeTrialClaimEmail(toEmail, toName string) error {
+	apiKey := os.Getenv("BREVO_API_KEY")
+	senderEmail := os.Getenv("BREVO_SENDER_EMAIL")
+
+	body := map[string]interface{}{
+		"sender": map[string]string{
+			"name":  "STABLE",
+			"email": senderEmail,
+		},
+		"to": []map[string]string{
+			{
+				"email": toEmail,
+				"name":  toName,
+			},
+		},
+		"subject": "Free Trial STABLE Berhasil Aktif",
+		"htmlContent": fmt.Sprintf(`
+			<h2>Free Trial kamu sudah aktif</h2>
+			<p>Halo %s, free trial membership STABLE berhasil diklaim.</p>
+			<p>Kamu sekarang bisa mencoba fitur membership sebelum upgrade paket.</p>
+		`, toName),
+		"tags": []string{"free-trial-claim"},
+	}
+
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		"https://api.brevo.com/v3/smtp/email",
+		bytes.NewBuffer(jsonBody),
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("api-key", apiKey)
+	req.Header.Set("content-type", "application/json")
+	req.Header.Set("accept", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("brevo error: %s", string(respBody))
+	}
+
+	return nil
+}

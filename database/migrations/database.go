@@ -44,6 +44,7 @@ func ConnectDB() {
     &entities.DailyChallengeExercise{},
     &entities.UserDailyActivityLog{},
     &entities.UserStreak{},
+	&entities.UserMembership{},
 	)
 
 	if err != nil {
