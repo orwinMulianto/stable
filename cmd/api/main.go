@@ -5,10 +5,12 @@ import (
 	"os"
 	"stable/database/migrations"
 	"stable/modules/auth"
+	"stable/modules/dailychallenge"
+	"stable/modules/profile"
+	"stable/modules/trainer"
+	"stable/modules/trainerchat"
 	"stable/modules/users"
 	"stable/packages/utils"
-	"stable/modules/membership"
-
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -21,7 +23,7 @@ func main() {
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods: []string{
-			"GET", "POST", "PUT", "DELETE", "OPTIONS",
+			"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS",
 		},
 		AllowHeaders: []string{
 			"Origin", "Content-Type", "Accept", "Authorization",
@@ -48,9 +50,15 @@ api := router.Group("/api")
 	{
 		auth.AuthRouter(v1)
 		users.UserRouter(v1)
-		membership.MembershipRouter(v1)
+		profile.ProfileRouter(v1)
+		dailychallenge.DailyChallengeRouter(v1)
+		trainerchat.TrainerChatRouter(v1)
+		trainer.TrainerRouter(v1)
 	}
-
+	for _, route := range router.Routes() {
+		log.Printf("ROUTE: %s %s", route.Method, route.Path)
+	}
+	router.Static("/uploads", "./uploads")
 	err := router.Run(":8080")
 	if err != nil {
     log.Fatal(err)

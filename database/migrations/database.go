@@ -1,13 +1,14 @@
 package migrations
 
 import (
+	"fmt"
+	"log"
+	"os"
+	"stable/database/entities"
+
 	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"fmt"
-	"os"
-	"stable/database/entities"
 )
 
 var DB *gorm.DB
@@ -44,7 +45,9 @@ func ConnectDB() {
     &entities.DailyChallengeExercise{},
     &entities.UserDailyActivityLog{},
     &entities.UserStreak{},
-	&entities.UserMembership{},
+	&entities.TrainerChatSession{},
+	&entities.TrainerChatMessage{},
+	&entities.TrainerProfile{},
 	)
 
 	if err != nil {

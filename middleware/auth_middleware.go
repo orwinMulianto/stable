@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"stable/database/migrations"
 	"stable/modules/users"
 	"stable/packages/utils"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
@@ -62,12 +63,13 @@ func RequireAuth() gin.HandlerFunc {
 
 		userIDValue, ok := claims["user_id"]
 		if !ok {
+			userIDValue, ok = claims["id"]
+		if !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, utils.BuildResponseFailed(
-				"Unauthorized",
-				"User ID not found in token",
-				nil,
+				"Unauthorized", "User ID not found in token", nil,
 			))
 			return
+			}
 		}
 
 		userIDFloat, ok := userIDValue.(float64)

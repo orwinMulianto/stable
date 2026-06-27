@@ -2,10 +2,13 @@ package auth
 
 import (
 	"fmt"
+	"os"
 	// "log"
 	"net/http"
+	"net/url"
 	"stable/packages/utils"
 	"strings"
+
 	// "stable/database/migrations"
 	"github.com/gin-gonic/gin"
 )
@@ -231,22 +234,38 @@ func (h *handler) GoogleLoginHandler(c *gin.Context) {
 }
 
 func (h *handler) GoogleCallbackHandler(c *gin.Context) {
-    code := c.Query("code")
-    if code == "" {
-        c.JSON(http.StatusBadRequest, utils.BuildResponseFailed(
-            "Google login failed", "authorization code not found", nil,
-        ))
-        return
-    }
+	code := c.Query("code")
+	if code == "" {
+		c.JSON(http.StatusBadRequest, utils.BuildResponseFailed(
+			"Google login failed",
+			"authorization code not found",
+			nil,
+		))
+		return
+	}
 
-    token, user, err := h.service.GoogleLogin(code)
-    if err != nil {
-        c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5501/login?error=google_failed")
-        return
-    }
+	token, user, err := h.service.GoogleLogin(code)
 
-    _ = user
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://127.0.0.1:5501"
+	}
 
-    redirectURL := fmt.Sprintf("http://localhost:5501/page/dashboard.html?token=%s", token)
-    c.Redirect(http.StatusTemporaryRedirect, redirectURL)
+	if err != nil {
+		redirectURL := fmt.Sprintf("%s/index.html?error=google_failed", frontendURL)
+		c.Redirect(http.StatusTemporaryRedirect, redirectURL)
+		return
+	}
+
+	redirectURL := fmt.Sprintf(
+		"%s/index.html?token=%s&id=%d&name=%s&email=%s&role=%s",
+		frontendURL,
+		url.QueryEscape(token),
+		user.ID,
+		url.QueryEscape(user.Username),
+		url.QueryEscape(user.Email),
+		url.QueryEscape(user.Role),
+	)
+
+	c.Redirect(http.StatusTemporaryRedirect, redirectURL)
 }

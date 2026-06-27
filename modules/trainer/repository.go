@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"stable/database/entities"
+
 	"gorm.io/gorm"
 )
 
@@ -25,22 +26,28 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (r *repository) GetByUserID(userID uint) (*entities.TrainerProfile, error) {
 	var profile entities.TrainerProfile
-	err := r.db.Preload("User").Where("user_id = ?", userID).First(&profile).Error
+
+	err := r.db.
+		Where("user_id = ?", userID).
+		First(&profile).Error
+
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("trainer profile not found")
 		}
 		return nil, err
 	}
+
 	return &profile, nil
 }
-
 func (r *repository) GetAll() ([]entities.TrainerProfile, error) {
 	var profiles []entities.TrainerProfile
-	err := r.db.Preload("User").Find(&profiles).Error
+
+	err := r.db.Find(&profiles).Error
 	if err != nil {
 		return nil, err
 	}
+
 	return profiles, nil
 }
 

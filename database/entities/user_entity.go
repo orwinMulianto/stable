@@ -14,6 +14,7 @@ type User struct {
 	NoTelp       string `json:"noTelp" form:"noTelp"`
 	JenisKelamin *bool  `json:"jenisKelamin" form:"jenisKelamin"`
 	Role string `gorm:"type:enum('USER','TRAINER');default:'USER';not null"`
+	UsernameChangedAt *time.Time `gorm:"column:username_changed_at" json:"username_changed_at"`
 
 	AuthProvider string `gorm:"type:enum('PASSWORD','GOOGLE');default:'PASSWORD';not null"`
 

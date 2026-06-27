@@ -1,30 +1,31 @@
 package trainer
 
 import (
-	"github.com/gin-gonic/gin"
 	"stable/database/migrations"
 	"stable/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 func TrainerRouter(router *gin.RouterGroup) {
-	trainerRepo    := NewRepository(migrations.GetDB())
+	trainerRepo := NewRepository(migrations.GetDB())
 	trainerService := NewService(trainerRepo)
 	trainerHandler := NewHandler(trainerService)
 
 	trainer := router.Group("/trainers")
 	{
-		// Public - tidak perlu auth
-		trainer.GET("", trainerHandler.GetAllTrainersHandler)           // GET /api/v1/trainers
-		trainer.GET("/:id", trainerHandler.GetTrainerByIDHandler)       // GET /api/v1/trainers/:id
+		// Public routes
+		trainer.GET("", trainerHandler.GetAllTrainersHandler)
+		trainer.GET("/detail/:id", trainerHandler.GetTrainerByIDHandler)
 
-		// Protected - perlu auth
+		// Protected routes
 		protected := trainer.Group("")
 		protected.Use(middleware.RequireAuth())
 		{
-			protected.GET("/me", trainerHandler.GetMyProfileHandler)        // GET /api/v1/trainers/me
-			protected.POST("/profile", trainerHandler.CreateProfileHandler) // POST /api/v1/trainers/profile
-			protected.PUT("/profile", trainerHandler.UpdateProfileHandler)  // PUT /api/v1/trainers/profile
-			protected.DELETE("/profile", trainerHandler.DeleteProfileHandler) // DELETE /api/v1/trainers/profile
+			protected.GET("/me", trainerHandler.GetMyProfileHandler)
+			protected.POST("/profile", trainerHandler.CreateProfileHandler)
+			protected.PUT("/profile", trainerHandler.UpdateProfileHandler)
+			protected.DELETE("/profile", trainerHandler.DeleteProfileHandler)
 		}
 	}
 }

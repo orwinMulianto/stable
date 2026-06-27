@@ -14,6 +14,7 @@ type UpdateTrainerProfileRequest struct {
 	Experience     string  `json:"experience"`
 	Certification  string  `json:"certification"`
 	Bio            string  `json:"bio"`
+	IsOnline *bool `json:"is_online"`
 }
 
 type TrainerProfileResponse struct {
