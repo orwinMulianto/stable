@@ -240,3 +240,22 @@ func (h *Handler) ConfirmPaymentHandler(c *gin.Context) {
     session, _ := h.service.GetSession(sessionID)
     c.JSON(http.StatusOK, gin.H{"data": session})
 }
+
+func (h *Handler) DevMarkPaidHandler(c *gin.Context) {
+	sessionID, err := parseUintParam(c.Param("session_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid session id"})
+		return
+	}
+
+	response, err := h.service.DevMarkPaid(sessionID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to mark session paid",
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": response})
+}

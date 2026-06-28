@@ -39,8 +39,6 @@ func ConnectDB() {
 	err = DB.AutoMigrate(
     &entities.User{},
     &entities.ProfileUser{},
-    &entities.Exercise{},
-    &entities.ExerciseContent{},
     &entities.DailyChallenge{},
     &entities.DailyChallengeExercise{},
     &entities.UserDailyActivityLog{},

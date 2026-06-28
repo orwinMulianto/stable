@@ -24,6 +24,7 @@ type Service interface {
 	GetMyDashboard(userID uint) (*TrainerDashboardResponse, error)
 	GetTrainerSessions(userID uint) ([]SessionResponse, error)
 	UpdatePaymentDirect(sessionID uint, updates map[string]interface{}) error
+	DevMarkPaid(sessionID uint) (*SessionResponse, error)
 }
 
 type service struct {
@@ -238,6 +239,34 @@ func (s *service) GetMyDashboard(userID uint) (*TrainerDashboardResponse, error)
 	}, nil
 }
 
+func (s *service) DevMarkPaid(sessionID uint) (*SessionResponse, error) {
+	session, err := s.repository.FindSession(sessionID)
+	if err != nil {
+		return nil, err
+	}
+
+	now := s.now()
+	expiresAt := now.Add(10 * time.Minute)
+
+	err = s.repository.UpdatePaymentBySessionID(sessionID, map[string]interface{}{
+		"status":     "paid",
+		"paid_at":    now,
+		"started_at": now,
+		"expires_at": expiresAt,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	session.Status = "paid"
+	session.StartedAt = &now
+	session.ExpiresAt = &expiresAt
+
+	messages, _ := s.repository.ListMessages(sessionID)
+	response := sessionToResponse(*session, messages)
+	return &response, nil
+}
+
 func sessionToResponse(
 	session entities.TrainerChatSession,
 	messages []entities.TrainerChatMessage,
@@ -273,8 +302,6 @@ func messageToResponse(message entities.TrainerChatMessage) MessageResponse {
 		CreatedAt: message.CreatedAt,
 	}
 }
-
-
 
 // Implementasi
 func (s *service) UpdatePaymentDirect(sessionID uint, updates map[string]interface{}) error {

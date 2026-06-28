@@ -24,6 +24,7 @@ type Repository interface {
 	ListMessages(sessionID uint) ([]entities.TrainerChatMessage, error)
 	ListSessionsByTrainerID(trainerID uint) ([]entities.TrainerChatSession, error)
 	UpdatePaymentBySessionID(sessionID uint, updates map[string]interface{}) error
+	
 }
 
 

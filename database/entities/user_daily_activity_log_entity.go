@@ -15,6 +15,5 @@ type UserDailyActivityLog struct {
 	User           User
 	DailyChallenge DailyChallenge
 
-	// unique composite index
 	_ struct{} `gorm:"uniqueIndex:idx_user_challenge,priority:1"`
 }

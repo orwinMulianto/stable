@@ -9,5 +9,4 @@ type DailyChallengeExercise struct {
 	RestSeconds      int  `gorm:"not null"`
 
 	DailyChallenge DailyChallenge `gorm:"constraint:OnDelete:CASCADE;"`
-	Exercise       Exercise       `gorm:"constraint:OnDelete:CASCADE;"`
 }

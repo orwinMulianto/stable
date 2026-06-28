@@ -22,6 +22,7 @@ func TrainerChatRouter(router *gin.RouterGroup) {
 		trainerChat.POST("/sessions/:session_id/messages", handler.SendMessageHandler)
 		trainerChat.GET("/sessions/:session_id/ws", WSHandler(hub, service))
 		trainerChat.POST("/sessions/:session_id/confirm", handler.ConfirmPaymentHandler)
+		trainerChat.POST("/sessions/:session_id/dev-paid", handler.DevMarkPaidHandler)
 
 		protected := trainerChat.Group("")
 		protected.Use(middleware.RequireAuth())
